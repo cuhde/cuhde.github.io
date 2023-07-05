@@ -15,6 +15,9 @@ minima:
 author: Constantin Uhde
 e_mail: info@constwerk.com
 
+header_pages:
+  - _pages/frontpage.md
+
 include:
     - _pages
 
