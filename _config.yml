@@ -1,5 +1,8 @@
 theme: minima
 
+minima:
+  skin: auto
+
 author:
   name: Constantin Uhde
   email: "info@constwerk.com"
