@@ -12,6 +12,6 @@ minima:
   skin: auto
   date_format: "%Y-%m-%d"
 
-author:
-  name: Constantin Uhde
-  email: "info@constwerk.com"
+author: Constantin Uhde
+e_mail: info@constwerk.com
+
