@@ -15,3 +15,12 @@ minima:
 author: Constantin Uhde
 e_mail: info@constwerk.com
 
+include:
+    - _pages
+
+exclude: 
+    - .gitignore
+    - Gemfile
+    - Gemfile.lock
+    - README.md
+
