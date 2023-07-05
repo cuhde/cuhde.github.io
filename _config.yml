@@ -1,7 +1,16 @@
+title: ConstWerk
+description: This is a coding blog focused on Unity and ROS
+
 theme: minima
+
+github_username: cuhde
+
+show_excerpts: true
+
 
 minima:
   skin: auto
+  date_format: "%Y-%m-%d"
 
 author:
   name: Constantin Uhde
