@@ -1,7 +1,9 @@
 title: ConstWerk
 description: This is a coding blog focused on Unity and ROS
+impressum: Impressum
 
-theme: minima
+#theme: minima
+remote_theme: jekyll/minima
 
 github_username: cuhde
 
@@ -11,6 +13,10 @@ show_excerpts: true
 minima:
   skin: auto
   date_format: "%Y-%m-%d"
+  social_links:  
+   - { platform: github,         user_url: "https://github.com/cuhde" }
+   - { platform: google_scholar, user_url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en" }
+   - { platform: linkedin,       user_url: "https://de.linkedin.com/in/constantin-uhde-9355b8137" }
 
 author: Constantin Uhde
 e_mail: info@constwerk.com
@@ -27,4 +33,5 @@ exclude:
     - Gemfile
     - Gemfile.lock
     - README.md
+
 
