@@ -3,3 +3,4 @@ gem 'github-pages', group: :jekyll_plugins
 gem "webrick"
 gem 'jekyll'
 gem 'jekyll-feed'
+gem "minima", github: "jekyll/minima"
