@@ -4,4 +4,4 @@ date: 2023-07-07
 layout: post
 ---
 
-This is my fist blog post.
+This is my first blog post.
