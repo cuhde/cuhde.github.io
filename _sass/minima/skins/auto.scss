@@ -112,8 +112,8 @@ $dm-brand-color-dark:      darken($dm-brand-color, 35%) !default;
 
 $dm-site-title-color:      $dm-brand-color-light !default;
 
-$dm-text-color:            #FFECD1 !default;
-$dm-background-color:      lighten(#001524, 10%) !default;
+$dm-text-color:            darken(#FFECD1, 5%) !default;
+$dm-background-color:      #001524 !default;
 $dm-code-background-color: #212121 !default;
 
 $dm-link-base-color:       lighten(#15616d, 35%) !default;
