@@ -81,7 +81,7 @@
     <script>
     // Function to fetch papers from arXiv
     async function fetchArxivPapers(category, maxResults = 50) {
-      const baseUrl = 'http://export.arxiv.org/api/query?';
+      const baseUrl = 'https://export.arxiv.org/api/query?';
       const query = `search_query=cat:${category}&sortBy=submittedDate&sortOrder=descending&max_results=${maxResults}`;
       const response = await fetch(baseUrl + query);
       const data = await response.text();
