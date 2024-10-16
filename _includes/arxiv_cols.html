@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest arXiv Papers in Robotics and AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.2;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 48%;
+        }
+        .paper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .paper h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .paper a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .paper a:hover {
+            text-decoration: underline;
+        }
+        .abstract {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .toggle-abstract {
+            cursor: pointer;
+            color: #3498db;
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .column {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Latest arXiv Papers in Robotics and AI</h1>
+    <div class="container">
+        <div class="column">
+            <h2>Robotics Papers</h2>
+            <div id="robotics-papers"></div>
+        </div>
+        <div class="column">
+            <h2>AI Papers</h2>
+            <div id="ai-papers"></div>
+        </div>
+    </div>
+
+    <script>
+    // Function to fetch papers from arXiv
+    async function fetchArxivPapers(category, maxResults = 50) {
+      const baseUrl = 'http://export.arxiv.org/api/query?';
+      const query = `search_query=cat:${category}&sortBy=submittedDate&sortOrder=descending&max_results=${maxResults}`;
+      const response = await fetch(baseUrl + query);
+      const data = await response.text();
+      return data;
+    }
+
+    // Function to parse XML response
+    function parseArxivResponse(xmlString) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+      const entries = xmlDoc.getElementsByTagName("entry");
+      
+      return Array.from(entries).map(entry => {
+        return {
+          title: entry.getElementsByTagName("title")[0].textContent,
+          authors: Array.from(entry.getElementsByTagName("author")).map(author => author.getElementsByTagName("name")[0].textContent),
+          summary: entry.getElementsByTagName("summary")[0].textContent,
+          pdfLink: entry.getElementsByTagName("link")[1].getAttribute("href"),
+          publishedDate: new Date(entry.getElementsByTagName("published")[0].textContent),
+          categories: Array.from(entry.getElementsByTagName("category")).map(category => category.getAttribute("term"))
+        };
+      });
+    }
+
+    // Function to display papers
+    function displayPapers(papers, containerId) {
+      const papersList = document.getElementById(containerId);
+      papersList.innerHTML = '';
+      
+      papers.forEach((paper, index) => {
+        const paperElement = document.createElement('div');
+        paperElement.classList.add('paper');
+        paperElement.innerHTML = `
+          <h3>${paper.title}</h3>
+          <p><strong>Authors:</strong> ${paper.authors.join(', ')}</p>
+          <p><strong>Published:</strong> ${paper.publishedDate.toDateString()}</p>
+          <p><strong>Categories:</strong> ${paper.categories.join(', ')}</p>
+          <p class="toggle-abstract" onclick="toggleAbstract('${containerId}-${index}')">Show Abstract</p>
+          <div class="abstract" id="${containerId}-${index}">${paper.summary}</div>
+          <a href="${paper.pdfLink}" target="_blank">Download PDF</a>
+        `;
+        papersList.appendChild(paperElement);
+      });
+    }
+
+    // Function to toggle abstract visibility
+    function toggleAbstract(id) {
+      const abstract = document.getElementById(id);
+      const toggleButton = abstract.previousElementSibling;
+      if (abstract.style.display === 'none' || abstract.style.display === '') {
+        abstract.style.display = 'block';
+        toggleButton.textContent = 'Hide Abstract';
+      } else {
+        abstract.style.display = 'none';
+        toggleButton.textContent = 'Show Abstract';
+      }
+    }
+
+    // Main function to fetch and display papers
+    async function fetchAndDisplayPapers() {
+      const roboticsData = await fetchArxivPapers('cs.RO');
+      const aiData = await fetchArxivPapers('cs.AI');
+      
+      const roboticsPapers = parseArxivResponse(roboticsData);
+      const aiPapers = parseArxivResponse(aiData);
+      
+      displayPapers(roboticsPapers, 'robotics-papers');
+      displayPapers(aiPapers, 'ai-papers');
+    }
+
+    // Call the main function when the page loads
+    window.addEventListener('load', fetchAndDisplayPapers);
+    </script>
+</body>
+</html>
