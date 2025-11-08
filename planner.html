@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Daily Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        /* Input Section */
+        .input-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .duration-buttons,
+        .add-btn {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+
+        .input-form.expanded .duration-buttons {
+            max-height: 100px;
+            opacity: 1;
+        }
+
+        .input-form.expanded .add-btn {
+            max-height: 50px;
+            opacity: 1;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .duration-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .duration-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 10px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .duration-btn.selected {
+            background: #007AFF;
+            color: white;
+            border-color: #007AFF;
+        }
+
+        .duration-btn:active {
+            transform: scale(0.95);
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .add-btn:active {
+            background: #0051D5;
+        }
+
+        .clear-btn {
+            background: #FF3B30;
+            padding: 8px 16px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+
+        .clear-btn.visible {
+            max-height: 40px;
+            opacity: 1;
+        }
+
+        /* Day View */
+        .day-view {
+            margin-top: 100px;
+            padding: 16px;
+            position: relative;
+            min-height: calc(100vh - 100px);
+            transition: margin-top 0.3s ease;
+        }
+
+        .day-view.expanded {
+            margin-top: 180px;
+        }
+
+        .day-container {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .grid-lines {
+            position: absolute;
+            left: 50px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .hour-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e8e8e8;
+        }
+
+        .quarter-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #f5f5f5;
+        }
+
+        .time-scale {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: #f9f9f9;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .time-marker {
+            position: absolute;
+            left: 0;
+            width: 50px;
+            font-size: 11px;
+            color: #666;
+            padding: 2px 4px;
+            transform: translateY(-50%);
+        }
+
+        .tasks-container {
+            margin-left: 50px;
+            position: relative;
+        }
+
+        .task {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: #007AFF;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 2px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: move;
+            touch-action: none;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .task.dragging {
+            opacity: 0.7;
+            z-index: 50;
+        }
+
+        .task.active {
+            cursor: default;
+        }
+
+        .task.completed {
+            background: #999 !important;
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .task-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0%;
+            background: rgba(255,255,255,0.3);
+            transition: height 0.3s ease;
+            pointer-events: none;
+        }
+
+        .task-content {
+            flex: 1;
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .task-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-duration {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .task-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            pointer-events: auto;
+            white-space: nowrap;
+        }
+
+        .task-btn.do-btn {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .task-delete {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            pointer-events: auto;
+        }
+
+        .task-resize-handle {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            cursor: ns-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+
+        .task-resize-handle::after {
+            content: '';
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 2px;
+        }
+
+        .current-time {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #FF3B30;
+            z-index: 10;
+        }
+
+        .current-time::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: -4px;
+            width: 10px;
+            height: 10px;
+            background: #FF3B30;
+            border-radius: 50%;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-section">
+        <form class="input-form" id="taskForm">
+            <input type="text" id="taskName" placeholder="Task name" required>
+            <div class="duration-buttons">
+                <button type="button" class="duration-btn" data-minutes="15">15m</button>
+                <button type="button" class="duration-btn" data-minutes="30">30m</button>
+                <button type="button" class="duration-btn" data-minutes="45">45m</button>
+                <button type="button" class="duration-btn selected" data-minutes="60">1h</button>
+                <button type="button" class="duration-btn" data-minutes="120">2h</button>
+            </div>
+            <button type="submit" class="add-btn">Add Task</button>
+        </form>
+        <button class="clear-btn" id="clearBtn" onclick="clearTasks()">Clear All</button>
+    </div>
+
+    <div class="day-view" id="dayView">
+        <div class="day-container" id="dayContainer">
+            <div class="time-scale" id="timeScale"></div>
+            <div class="grid-lines" id="gridLines"></div>
+            <div class="tasks-container" id="tasksContainer"></div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            dayStart: 6,
+            dayEnd: 23,
+            pixelsPerHour: 100,
+            snapInterval: 0.25, // 15 minutes in hours
+            topPadding: 10, // padding at top of day view
+            bottomPadding: 10, // padding at bottom of day view
+            colors: [
+                '#007AFF', // blue
+                '#FF9500', // orange
+                '#FF3B30', // red
+                '#34C759', // green
+                '#AF52DE', // purple
+                '#FF2D55', // pink
+                '#5856D6', // indigo
+                '#32ADE6', // cyan
+            ]
+        };
+
+        // State
+        let tasks = loadTasks();
+        let selectedDuration = 60;
+        let dragState = null;
+        let resizeState = null;
+
+        // Initialize
+        function init() {
+            setupTimeScale();
+            setupGridLines();
+            setupDurationButtons();
+            setupInputExpansion();
+            renderTasks();
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000);
+            setInterval(updateActiveTasksProgress, 1000);
+        }
+
+        // Duration button handling
+        function setupDurationButtons() {
+            const buttons = document.querySelectorAll('.duration-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedDuration = parseInt(btn.dataset.minutes);
+                });
+            });
+        }
+
+        // Time scale setup
+        function setupTimeScale() {
+            const timeScale = document.getElementById('timeScale');
+            const totalHours = CONFIG.dayEnd - CONFIG.dayStart;
+            const containerHeight = totalHours * CONFIG.pixelsPerHour + CONFIG.topPadding + CONFIG.bottomPadding;
+            
+            document.getElementById('dayContainer').style.height = containerHeight + 'px';
+            
+            for (let hour = CONFIG.dayStart; hour <= CONFIG.dayEnd; hour++) {
+                const marker = document.createElement('div');
+                marker.className = 'time-marker';
+                marker.textContent = formatHour(hour);
+                marker.style.top = (CONFIG.topPadding + (hour - CONFIG.dayStart) * CONFIG.pixelsPerHour) + 'px';
+                timeScale.appendChild(marker);
+            }
+        }
+
+        // Grid lines setup
+        function setupGridLines() {
+            const gridLines = document.getElementById('gridLines');
+            const totalHours = CONFIG.dayEnd - CONFIG.dayStart;
+            
+            for (let hour = CONFIG.dayStart; hour <= CONFIG.dayEnd; hour++) {
+                const hourLine = document.createElement('div');
+                hourLine.className = 'hour-line';
+                hourLine.style.top = (CONFIG.topPadding + (hour - CONFIG.dayStart) * CONFIG.pixelsPerHour) + 'px';
+                gridLines.appendChild(hourLine);
+                
+                // Add quarter-hour lines (15, 30, 45 minutes)
+                if (hour < CONFIG.dayEnd) {
+                    for (let quarter = 1; quarter < 4; quarter++) {
+                        const quarterLine = document.createElement('div');
+                        quarterLine.className = 'quarter-line';
+                        quarterLine.style.top = (CONFIG.topPadding + (hour - CONFIG.dayStart) * CONFIG.pixelsPerHour + (quarter * 25)) + 'px';
+                        gridLines.appendChild(quarterLine);
+                    }
+                }
+            }
+        }
+
+        // Input expansion setup
+        function setupInputExpansion() {
+            const form = document.getElementById('taskForm');
+            const input = document.getElementById('taskName');
+            const dayView = document.getElementById('dayView');
+            const clearBtn = document.getElementById('clearBtn');
+            
+            input.addEventListener('focus', () => {
+                form.classList.add('expanded');
+                dayView.classList.add('expanded');
+                clearBtn.classList.add('visible');
+            });
+            
+            input.addEventListener('blur', (e) => {
+                // Delay to allow button clicks
+                setTimeout(() => {
+                    if (!form.contains(document.activeElement)) {
+                        form.classList.remove('expanded');
+                        dayView.classList.remove('expanded');
+                        clearBtn.classList.remove('visible');
+                    }
+                }, 200);
+            });
+        }
+
+        // Task management
+        function addTask(name, durationMinutes) {
+            // Find the bottom of the last task to stack new task below it
+            let nextPosition = 0;
+            if (tasks.length > 0) {
+                const lastPositions = tasks.map(t => t.position + (t.duration * CONFIG.pixelsPerHour));
+                nextPosition = Math.max(...lastPositions) + 4; // 4px gap
+            }
+            
+            tasks.push({
+                id: Date.now(),
+                name: name,
+                duration: durationMinutes / 60,
+                position: nextPosition,
+                color: getTaskColor(tasks.length),
+                state: 'pending',
+                startTime: null,
+                completedTime: null
+            });
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        function updateTask(id, updates) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                Object.assign(task, updates);
+                saveTasks();
+            }
+        }
+
+        function startTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task || task.state !== 'pending') return;
+
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentHour = hours + minutes / 60;
+            const currentPosition = (currentHour - CONFIG.dayStart) * CONFIG.pixelsPerHour;
+
+            updateTask(id, {
+                state: 'active',
+                startTime: Date.now(),
+                position: clampPosition(currentPosition, task.duration)
+            });
+            renderTasks();
+        }
+
+        function completeTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task || task.state !== 'active') return;
+
+            const now = Date.now();
+            const elapsedMs = now - task.startTime;
+            const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+            updateTask(id, {
+                state: 'completed',
+                completedTime: now,
+                duration: elapsedHours,
+                position: clampPosition(task.position, elapsedHours)
+            });
+            renderTasks();
+        }
+
+        function clearTasks() {
+            if (tasks.length && confirm('Clear all tasks?')) {
+                tasks = [];
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        // Drag and drop
+        function startDrag(e, taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task || task.state !== 'pending') return;
+            
+            if (e.target.closest('.task-delete') || e.target.closest('.task-resize-handle') || e.target.closest('.task-btn')) {
+                return;
+            }
+
+            e.preventDefault();
+            const taskEl = e.currentTarget;
+            const rect = taskEl.getBoundingClientRect();
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            dragState = {
+                taskId: taskId,
+                startY: clientY,
+                initialPosition: task.position,
+                offsetY: clientY - rect.top
+            };
+
+            taskEl.classList.add('dragging');
+        }
+
+        function onDrag(e) {
+            if (!dragState) return;
+            
+            e.preventDefault();
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const containerRect = document.getElementById('tasksContainer').getBoundingClientRect();
+            const newPosition = clientY - containerRect.top - CONFIG.topPadding - dragState.offsetY;
+            
+            const task = tasks.find(t => t.id === dragState.taskId);
+            const clampedPosition = task ? clampPosition(newPosition, task.duration) : newPosition;
+            
+            const taskEl = document.querySelector(`[data-task-id="${dragState.taskId}"]`);
+            if (taskEl) {
+                taskEl.style.top = (CONFIG.topPadding + clampedPosition) + 'px';
+            }
+        }
+
+        function endDrag(e) {
+            if (!dragState) return;
+
+            const task = tasks.find(t => t.id === dragState.taskId);
+            const taskEl = document.querySelector(`[data-task-id="${dragState.taskId}"]`);
+            if (taskEl && task) {
+                taskEl.classList.remove('dragging');
+                const currentPosition = parseInt(taskEl.style.top) - CONFIG.topPadding;
+                const snappedPosition = snapToInterval(currentPosition);
+                const clampedPosition = clampPosition(snappedPosition, task.duration);
+                taskEl.style.top = (CONFIG.topPadding + clampedPosition) + 'px';
+                updateTask(dragState.taskId, { position: clampedPosition });
+            }
+
+            dragState = null;
+        }
+
+        // Resize handling
+        function startResize(e, taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task || task.state !== 'pending') return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            resizeState = {
+                taskId: taskId,
+                startY: clientY,
+                initialDuration: task.duration
+            };
+        }
+
+        function onResize(e) {
+            if (!resizeState) return;
+            
+            e.preventDefault();
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const deltaY = clientY - resizeState.startY;
+            const deltaHours = deltaY / CONFIG.pixelsPerHour;
+            const newDuration = Math.max(0.25, resizeState.initialDuration + deltaHours);
+            
+            const task = tasks.find(t => t.id === resizeState.taskId);
+            if (!task) return;
+            
+            // Clamp duration so task doesn't exceed day bounds
+            const maxPosition = (CONFIG.dayEnd - CONFIG.dayStart) * CONFIG.pixelsPerHour;
+            const maxAllowedDuration = (maxPosition - task.position) / CONFIG.pixelsPerHour;
+            const clampedDuration = Math.min(newDuration, maxAllowedDuration);
+            
+            const taskEl = document.querySelector(`[data-task-id="${resizeState.taskId}"]`);
+            if (taskEl) {
+                const height = clampedDuration * CONFIG.pixelsPerHour;
+                taskEl.style.height = height + 'px';
+                
+                const durationEl = taskEl.querySelector('.task-duration');
+                if (durationEl) {
+                    durationEl.textContent = formatDuration(clampedDuration);
+                }
+            }
+        }
+
+        function endResize(e) {
+            if (!resizeState) return;
+
+            const task = tasks.find(t => t.id === resizeState.taskId);
+            const taskEl = document.querySelector(`[data-task-id="${resizeState.taskId}"]`);
+            if (taskEl && task) {
+                const currentHeight = parseInt(taskEl.style.height);
+                const currentDuration = currentHeight / CONFIG.pixelsPerHour;
+                
+                // Snap to interval
+                let snappedDuration = Math.max(CONFIG.snapInterval, Math.round(currentDuration / CONFIG.snapInterval) * CONFIG.snapInterval);
+                
+                // Clamp to bounds
+                const maxPosition = (CONFIG.dayEnd - CONFIG.dayStart) * CONFIG.pixelsPerHour;
+                const maxAllowedDuration = (maxPosition - task.position) / CONFIG.pixelsPerHour;
+                snappedDuration = Math.min(snappedDuration, maxAllowedDuration);
+                
+                const snappedHeight = snappedDuration * CONFIG.pixelsPerHour;
+                
+                taskEl.style.height = snappedHeight + 'px';
+                const durationEl = taskEl.querySelector('.task-duration');
+                if (durationEl) {
+                    durationEl.textContent = formatDuration(snappedDuration);
+                }
+                
+                updateTask(resizeState.taskId, { duration: snappedDuration });
+            }
+
+            resizeState = null;
+        }
+
+        // Rendering
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state">Add your first task above</div>';
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task';
+                if (task.state === 'active') taskEl.classList.add('active');
+                if (task.state === 'completed') taskEl.classList.add('completed');
+                
+                taskEl.dataset.taskId = task.id;
+                const height = task.duration * CONFIG.pixelsPerHour;
+                taskEl.style.height = height + 'px';
+                taskEl.style.top = (CONFIG.topPadding + task.position) + 'px';
+                taskEl.style.backgroundColor = task.color || getTaskColor(index);
+                
+                let buttons = '';
+                if (task.state === 'pending') {
+                    buttons = `
+                        <button class="task-btn do-btn" onclick="startTask(${task.id})">Do</button>
+                        <button class="task-delete" onclick="deleteTask(${task.id})">×</button>
+                    `;
+                } else if (task.state === 'active') {
+                    buttons = `<button class="task-btn" onclick="completeTask(${task.id})">✓ Done</button>`;
+                } else {
+                    buttons = `<button class="task-delete" onclick="deleteTask(${task.id})">×</button>`;
+                }
+                
+                taskEl.innerHTML = `
+                    <div class="task-progress"></div>
+                    <div class="task-content">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-duration">${formatDuration(task.duration)}</div>
+                    </div>
+                    <div class="task-actions">
+                        ${buttons}
+                    </div>
+                    ${task.state === 'pending' ? '<div class="task-resize-handle"></div>' : ''}
+                `;
+                
+                // Only add drag/resize for pending tasks
+                if (task.state === 'pending') {
+                    taskEl.addEventListener('mousedown', (e) => startDrag(e, task.id));
+                    taskEl.addEventListener('touchstart', (e) => startDrag(e, task.id), { passive: false });
+
+                    const resizeHandle = taskEl.querySelector('.task-resize-handle');
+                    if (resizeHandle) {
+                        resizeHandle.addEventListener('mousedown', (e) => startResize(e, task.id));
+                        resizeHandle.addEventListener('touchstart', (e) => startResize(e, task.id), { passive: false });
+                    }
+                }
+                
+                container.appendChild(taskEl);
+            });
+
+            updateActiveTasksProgress();
+        }
+
+        function updateActiveTasksProgress() {
+            const activeTasks = tasks.filter(t => t.state === 'active');
+            
+            activeTasks.forEach(task => {
+                const taskEl = document.querySelector(`[data-task-id="${task.id}"]`);
+                if (!taskEl) return;
+
+                const elapsed = Date.now() - task.startTime;
+                const elapsedHours = elapsed / (1000 * 60 * 60);
+                const progress = Math.min((elapsedHours / task.duration) * 100, 100);
+
+                const progressEl = taskEl.querySelector('.task-progress');
+                if (progressEl) {
+                    progressEl.style.height = progress + '%';
+                }
+            });
+        }
+
+        // Global drag/resize handlers
+        document.addEventListener('mousemove', (e) => {
+            if (dragState) onDrag(e);
+            if (resizeState) onResize(e);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (dragState) onDrag(e);
+            if (resizeState) onResize(e);
+        }, { passive: false });
+
+        document.addEventListener('mouseup', (e) => {
+            if (dragState) endDrag(e);
+            if (resizeState) endResize(e);
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (dragState) endDrag(e);
+            if (resizeState) endResize(e);
+        });
+
+        // Current time indicator
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentHour = hours + minutes / 60;
+            
+            if (currentHour >= CONFIG.dayStart && currentHour <= CONFIG.dayEnd) {
+                const position = CONFIG.topPadding + (currentHour - CONFIG.dayStart) * CONFIG.pixelsPerHour;
+                const timeIndicator = document.getElementById('currentTime');
+                timeIndicator.style.top = position + 'px';
+                timeIndicator.style.display = 'block';
+            } else {
+                document.getElementById('currentTime').style.display = 'none';
+            }
+        }
+
+        // Persistence
+        function saveTasks() {
+            localStorage.setItem('dailyPlannerTasks', JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            const saved = localStorage.getItem('dailyPlannerTasks');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // Utilities
+        function formatHour(hour) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+            return `${displayHour}${period}`;
+        }
+
+        function formatDuration(hours) {
+            const totalMinutes = Math.round(hours * 60);
+            if (totalMinutes < 60) {
+                return `${totalMinutes}m`;
+            }
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            return m > 0 ? `${h}h ${m}m` : `${h}h`;
+        }
+
+        function snapToInterval(value) {
+            const snapPixels = CONFIG.snapInterval * CONFIG.pixelsPerHour;
+            return Math.round(value / snapPixels) * snapPixels;
+        }
+
+        function clampPosition(position, durationHours) {
+            const maxPosition = (CONFIG.dayEnd - CONFIG.dayStart) * CONFIG.pixelsPerHour;
+            const taskHeight = durationHours * CONFIG.pixelsPerHour;
+            const minPosition = 0;
+            const maxAllowedPosition = maxPosition - taskHeight;
+            
+            return Math.max(minPosition, Math.min(position, maxAllowedPosition));
+        }
+
+        function getTaskColor(index) {
+            return CONFIG.colors[index % CONFIG.colors.length];
+        }
+
+        // Form handling
+        document.getElementById('taskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('taskName').value.trim();
+            if (name) {
+                addTask(name, selectedDuration);
+                document.getElementById('taskName').value = '';
+            }
+        });
+
+        // Start app
+        init();
+    </script>
+</body>
+</html>
