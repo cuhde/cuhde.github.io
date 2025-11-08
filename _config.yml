@@ -1,11 +1,11 @@
 title: ConstWerk
-description: This is a coding blog focused on Unity and ROS
+description: This is my personal blog
 impressum: Impressum
 
 plugins:
-  - jekyll-remote-theme
-#theme: minima
-remote_theme: jekyll/minima
+
+theme: minima
+
 
 show_excerpts: true
 
