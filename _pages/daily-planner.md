@@ -1,6 +1,6 @@
 ---
 permalink: /planner
 layout: page
-title: Daily Planner
+title: Planner
 ---
 {% include daily-planner.html %}
