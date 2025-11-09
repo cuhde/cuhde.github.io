@@ -35,13 +35,8 @@ minima:
     - title: Google Scholar
       icon: google-scholar
       url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en"
-    - title: Impressum
-      icon: font-awesome-flag
-      url: "impressum"
-    - title: Datenschutzhinweise
-      icon: fort-awesome-alt
-      url: "datenschutzhinweise"
-  show_excerpts: false
+
+  show_excerpts: true
 
   nav_pages:
     - _pages/frontpage.md
