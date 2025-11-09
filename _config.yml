@@ -35,6 +35,12 @@ minima:
     - title: Google Scholar
       icon: google-scholar
       url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en"
+    - title: Impressum
+      icon: section
+      url: "-pages/impressum.md"
+    - title: Datenschutzhinweise
+      icon: shield-halved
+      url: "_pages/privacy.md"
   show_excerpts: false
 
   nav_pages:
