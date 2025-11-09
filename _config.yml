@@ -1,6 +1,6 @@
 title: ConstWerk
 
-description: This is my personal blog [Impressum](_pages/impressum.md) [Datenschutzhinweise](_pages/privacy.md)
+description: This is my personal blog
 impressum: Impressum
 
 author: 
@@ -37,10 +37,10 @@ minima:
       url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en"
     - title: Impressum
       icon: font-awesome-flag
-      url: "-pages/impressum.md"
+      url: "impressum"
     - title: Datenschutzhinweise
       icon: fort-awesome-alt
-      url: "_pages/privacy.md"
+      url: "datenschutzhinweise"
   show_excerpts: false
 
   nav_pages:
