@@ -38,9 +38,9 @@ minima:
   show_excerpts: false
 
   nav_pages:
-    - frontpage.md
-    - catchup.md
-    - archive.md
+    - _pages/frontpage.md
+    - _pages/catchup.md
+    - _pages/archive.md
 
 
 
