@@ -24,10 +24,10 @@ minima:
 author: Constantin Uhde
 e_mail: info@constwerk.com
 
-header_pages:
-  - _pages/frontpage.md
-  - _pages/catchup.md
-  - _pages/archive.md
+  nav_pages:
+    - frontpage.md
+    - catchup.md
+    - archive.md
 
 include:
     - _pages
