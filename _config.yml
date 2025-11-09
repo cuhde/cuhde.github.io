@@ -7,14 +7,10 @@ plugins:
 
 #theme: minima
 remote_theme: jekyll/minima
-
-minima:
-
 show_excerpts: false
 
-
 minima:
-  skin: auto
+  skin: solarized
   date_format: "%Y-%m-%d"
   social_links:  
     - title: GitHub
@@ -34,9 +30,6 @@ nav_pages:
   - frontpage.md
   - catchup.md
   - archive.md
-
-include:
-    - _pages
 
 exclude: 
     - .gitignore
