@@ -3,8 +3,10 @@ description: This is my personal blog
 impressum: Impressum
 
 plugins:
+  - jekyll-remote-theme
 
-theme: minima
+#theme: minima
+remote_theme: jekyll/minima
 
 minima:
 
