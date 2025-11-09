@@ -35,10 +35,13 @@ nav_pages:
   - catchup.md
   - archive.md
 
+include:
+  - _pages
+
 exclude: 
-    - .gitignore
-    - Gemfile
-    - Gemfile.lock
-    - README.md
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock
+  - README.md
 
 
