@@ -1,6 +1,6 @@
 title: ConstWerk
 
-description: This is my personal blog
+description: This is my personal blog [Impressum](_pages/impressum.md) [Datenschutzhinweise](_pages/privacy.md)
 impressum: Impressum
 
 author: 
@@ -13,6 +13,14 @@ plugins:
 #theme: minima
 remote_theme: jekyll/minima
 
+include:
+  - _pages
+
+exclude: 
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock
+  - README.md
 
 minima:
   skin: solarized
@@ -29,19 +37,11 @@ minima:
       url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en"
   show_excerpts: false
 
+  nav_pages:
+    - frontpage.md
+    - catchup.md
+    - archive.md
 
-nav_pages:
-  - frontpage.md
-  - catchup.md
-  - archive.md
 
-include:
-  - _pages
-
-exclude: 
-  - .gitignore
-  - Gemfile
-  - Gemfile.lock
-  - README.md
 
 
