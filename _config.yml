@@ -8,19 +8,13 @@ theme: minima
 
 minima:
 
-show_excerpts: true
+show_excerpts: false
 
 
 minima:
   skin: auto
   date_format: "%Y-%m-%d"
   social_links:  
-  - title: GitHub
-    icon: github
-    url: "https://github.com/cuhde"
-  - title: LinkedIn
-    icon: linkedin
-    url: "https://de.linkedin.com/in/constantin-uhde-9355b8137"
    - { platform: github,         user_url: "https://github.com/cuhde" }
    - { platform: google_scholar, user_url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en" }
    - { platform: linkedin,       user_url: "https://de.linkedin.com/in/constantin-uhde-9355b8137" }
