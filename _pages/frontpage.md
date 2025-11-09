@@ -1,7 +1,7 @@
 ---
 permalink: /
 layout: home
-title: Hi
+title: Blog
 list_title: Posts
 ---
 
