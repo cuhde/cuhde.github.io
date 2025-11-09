@@ -4,15 +4,15 @@ date: 2025-11-09
 layout: post
 ---
 
-# Premise
+### Premise
 I have been looking into productivity tools for a long time already and somewhat optimized my setup towards a state that I can work with.
 Recently I looked into daily planning as this is still an area I would like to improve.
 In this context, daily planning just means taking tasks and events from your other tools and structuring them for the current day.
-## Timeblocking
+#### Timeblocking
 There are many apps that hope to solve daily planning for you. Most of them implement a form of [timeblocking](https://en.wikipedia.org/wiki/Timeblocking).
 I had a shot at [Structured](https://structured.app/) and while I like the polish and presentation of the app, I found myself falling behind, even when the timeblocked tasks should be simple to start.
 
-# Working Theory
+### Working Theory
 I found that timeblocking doesn't work for me as I often don't *feel like it* in the *planned* moment of action. I don't like too much structure, so the tools have to cater to that if I want to be productive.
 This means that I need something other than timeblocking to structure my day. A simple list of ToDos for the day already works OK in most cases. But what this list lacks is **commitment and gratification**.
 A lot of posts and blogs mention [Sunsama](https://www.sunsama.com/) and how it transformed their daily planning, prompting people to content themselves with a steep pricetag of 20€/month.
@@ -21,7 +21,7 @@ During my brief testing, I found that *assigning a planned duration* and then al
 My understanding is, that the **act of commiting** and recording the time taken **helps engaging with the task**, as it's a simple low-barrier entry that builds momentum.
 Sunsama also gives you a break-down of all tasks completed which is really neat and probably helps with the *gratification* aspect, that my ToDo list approach lacks.
 
-# Iterating
+### Iterating
 I am not willing to pay 20€/month or even 10€/month for a feature set that barely expands on my todo app. That's why I vibe coded a quick [daily planner](https://constwerk.com/planner.html) myself, to test what works and what doesn't. 
 As the devs of Sunsama and Structured point out, their tools are an extension on top of an existing calendar and todo list. So my solution for now is that this extension can be simple and ephemeral.
 The daily planner prototype is just a static HTML site that lets you put in tasks, their duration and when to do them. Each task has a *commit* button called "Do". 
