@@ -1,13 +1,18 @@
 title: ConstWerk
+
 description: This is my personal blog
 impressum: Impressum
+
+author: 
+  name: Constantin Uhde
+  email: info@constwerk.com
 
 plugins:
   - jekyll-remote-theme
 
 #theme: minima
 remote_theme: jekyll/minima
-show_excerpts: false
+
 
 minima:
   skin: solarized
@@ -22,9 +27,8 @@ minima:
     - title: Google Scholar
       icon: google-scholar
       url: "https://scholar.google.de/citations?user=8JTCNCIAAAAJ&hl=en"
+  show_excerpts: false
 
-author: Constantin Uhde
-e_mail: info@constwerk.com
 
 nav_pages:
   - frontpage.md
